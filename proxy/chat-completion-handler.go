@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"codeberg.org/ess/bagman"
-	"codeberg.org/ess/bagman/chat"
+	"github.com/v-e-r-n/baagman"
+	"github.com/v-e-r-n/baagman/chat"
 )
 
 const chatCompletionBaseURL = "https://api.openai.com/v1"

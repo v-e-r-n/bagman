@@ -3,8 +3,8 @@ package chat
 import (
 	"encoding/json"
 
-	"codeberg.org/ess/bagman"
-	"codeberg.org/ess/bagman/utils"
+	"github.com/v-e-r-n/baagman"
+	"github.com/v-e-r-n/baagman/utils"
 )
 
 var _ bagman.Object = (*CompletionRequest)(nil)
