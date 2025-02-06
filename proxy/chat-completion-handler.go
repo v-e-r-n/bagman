@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/v-e-r-n/baagman"
-	"github.com/v-e-r-n/baagman/chat"
+	"github.com/v-e-r-n/bagman"
+	"github.com/v-e-r-n/bagman/chat"
 )
 
 const chatCompletionBaseURL = "https://api.openai.com/v1"

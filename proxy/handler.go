@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/v-e-r-n/baagman"
+	"github.com/v-e-r-n/bagman"
 )
 
 type Authifier func(string) string

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/v-e-r-n/baagman"
-	"github.com/v-e-r-n/baagman/utils"
+	"github.com/v-e-r-n/bagman"
+	"github.com/v-e-r-n/bagman/utils"
 )
 
 var _ bagman.Part = (*Part)(nil)
