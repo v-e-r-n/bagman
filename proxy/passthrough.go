@@ -1,32 +1,27 @@
 package proxy
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/v-e-r-n/bagman"
-	"github.com/v-e-r-n/bagman/chat"
 )
 
-const chatCompletionPath = "v1/chat/completions"
+const passthroughPath = "v1/chat/completions"
 
-type chatCompletionHandler struct {
+type passthroughHandler struct {
 	finalized bool
 	opts      *proxyOptions
 }
 
-func ChatCompletionHandler() Handler {
-	return &chatCompletionHandler{
+func PassthroughHandler() Handler {
+	return &passthroughHandler{
 		opts: Proxy().WithBaseURL(
 			defaultUpstreamURL,
-		).WithUpstreamEndpoint(
-			chatCompletionPath,
 		),
 	}
 }
 
-func (h *chatCompletionHandler) WithUpstreamEndpoint(endpoint string) Handler {
+func (h *passthroughHandler) WithUpstreamEndpoint(endpoint string) Handler {
 	if h.finalized {
 		return h
 	}
@@ -36,7 +31,7 @@ func (h *chatCompletionHandler) WithUpstreamEndpoint(endpoint string) Handler {
 	return h
 }
 
-func (h *chatCompletionHandler) WithPathPrefix(prefix string) Handler {
+func (h *passthroughHandler) WithPathPrefix(prefix string) Handler {
 	if h.finalized {
 		return h
 	}
@@ -46,31 +41,24 @@ func (h *chatCompletionHandler) WithPathPrefix(prefix string) Handler {
 	return h
 }
 
-func (h *chatCompletionHandler) WithAuthifier(authifier Authifier) Handler {
+func (h *passthroughHandler) WithAuthifier(authifier Authifier) Handler {
 	if h.finalized {
 		return h
 	}
 
-	h.opts.WithRequestHeaderMod(func(headers http.Header) (http.Header, error) {
-		originalKey := strings.TrimPrefix("Bearer ", headers.Get("Authorization"))
-		headers.Set(
-			"Authorization",
-			fmt.Sprintf("Bearer %s", authifier(originalKey)),
-		)
-		return headers, nil
-	})
+	h.opts.WithRequestHeaderMod(authify(authifier))
 
 	return h
 }
 
-func (h *chatCompletionHandler) WithRequestModifier(modifier RequestModifier) Handler {
+func (h *passthroughHandler) WithRequestModifier(modifier RequestModifier) Handler {
 	if h.finalized {
 		return h
 	}
 
 	hlog := h.opts.logger
 
-	h.opts.WithRequestBodyMod(requestify(&chat.CompletionRequest{}, modifier, hlog))
+	h.opts.WithRequestBodyMod(requestify(NewGenericRequest(), modifier, hlog))
 
 	// h.opts.WithRequestBodyMod(func(data []byte) ([]byte, error) {
 	// 	upstreamRequest := &chat.CompletionRequest{}
@@ -94,7 +82,7 @@ func (h *chatCompletionHandler) WithRequestModifier(modifier RequestModifier) Ha
 	return h
 }
 
-func (h *chatCompletionHandler) WithBaseURL(baseURL string) Handler {
+func (h *passthroughHandler) WithBaseURL(baseURL string) Handler {
 	if h.finalized {
 		return h
 	}
@@ -104,13 +92,13 @@ func (h *chatCompletionHandler) WithBaseURL(baseURL string) Handler {
 	return h
 }
 
-func (h *chatCompletionHandler) Finalize() Handler {
+func (h *passthroughHandler) Finalize() Handler {
 	h.finalized = true
 
 	return h
 }
 
-func (h *chatCompletionHandler) Handle(w http.ResponseWriter, r *http.Request, loggers ...bagman.Logger) error {
+func (h *passthroughHandler) Handle(w http.ResponseWriter, r *http.Request, loggers ...bagman.Logger) error {
 	hlog := logger
 	if len(loggers) > 0 {
 		hlog = loggers[0]
